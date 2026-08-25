@@ -1,6 +1,11 @@
 package main
 
-import "os"
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 type Config struct {
 	ServerPort   string
@@ -19,6 +24,10 @@ func getEnv(key, fallback string) string {
 }
 
 func LoadConfig() Config {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No se encontró archivo .env, usando variables de entorno del sistema")
+	}
+
 	return Config{
 		ServerPort:   getEnv("SERVER_PORT", "8080"),
 		RabbitURL:    getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"),
