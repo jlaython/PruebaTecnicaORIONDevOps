@@ -47,7 +47,7 @@ Por ejemplo:
 - Docker.
 - Kubernetes.
 - Helm.
-- GitLab CI/CD.
+- CI/CD (GitHub Actions, GitLab CI/CD o equivalente).
 - Seguridad.
 - Observabilidad.
 - Testing.
