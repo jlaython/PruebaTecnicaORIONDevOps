@@ -1,12 +1,14 @@
 # ORION Platform Engineering Challenge
 
 ## Introducción
+
 Bienvenido a la prueba técnica para el cargo de DevOps & Platform Engineer.
 El objetivo de esta evaluación es validar tus capacidades para diseñar, automatizar, desplegar y operar plataformas tecnológicas modernas basadas en contenedores y Kubernetes.
 La prueba busca simular una situación real donde un equipo de desarrollo ha construido una solución funcional, pero aún no existe una estrategia de despliegue, automatización, seguridad y operación.
 ---
 
 # Contexto de Negocio
+
 La plataforma ORION soporta aplicaciones utilizadas en Sistemas Inteligentes de Transporte (ITS).
 Actualmente el equipo de desarrollo ha construido una solución basada en microservicios que permite registrar órdenes y procesarlas mediante mensajería asíncrona.
 La solución está compuesta por:
@@ -65,23 +67,38 @@ REFINEMENT.md
 ```
 ---
 # Tecnologías
-Se espera el uso de:
+
+Como mínimo se espera el uso de:
 - Docker
 - Kubernetes
+Se recomienda el uso de:
 - Helm
+- GitHub Actions
 - GitLab CI/CD
-Puede utilizar herramientas adicionales que considere apropiadas.
+- Terraform
+- Trivy
+- SonarQube
+
+Los candidatos podrán utilizar herramientas adicionales o alternativas siempre que justifiquen técnicamente su elección y la solución sea reproducible.
 ---
 
 # Entregables
+
 La solución debe incluir:
+
 ```text
 Dockerfile(s)
+
 docker-compose.yml
-.gitlab-ci.yml
-Chart Helm
+
+Pipeline CI/CD
+
+Chart Helm (recomendado)
+
 README.md actualizado
+
 BACKLOG_REFINED.md
+
 RCA.md
 ```
 ---
