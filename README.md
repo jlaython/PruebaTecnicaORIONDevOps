@@ -13,10 +13,11 @@ La plataforma ORION soporta aplicaciones utilizadas en Sistemas Inteligentes de 
 Actualmente el equipo de desarrollo ha construido una solución basada en microservicios que permite registrar órdenes y procesarlas mediante mensajería asíncrona.
 La solución está compuesta por:
 - Orders API
-- Orders Worker
+- reception-service
 - Message Broker (RabbitMQ)
 La aplicación actualmente funciona en entorno local de desarrollo.
 Sin embargo, la organización necesita preparar la solución para ambientes empresariales utilizando prácticas modernas de DevOps y Platform Engineering.
+ver README de cada servicio para mayor entendimiento del mismo. 
 ---
 # Arquitectura Actual
 
@@ -46,6 +47,7 @@ Preparar la plataforma para su despliegue y operación empresarial mediante:
 ---
 
 # Código Entregado
+
 El repositorio contiene:
 ```text
 orders-service/
@@ -57,6 +59,7 @@ Ambos servicios son funcionales y pueden ejecutarse localmente.
 ---
 
 # Alcance
+
 El backlog inicial se encuentra documentado en:
 ```text
 BACKLOG.md
@@ -103,6 +106,7 @@ RCA.md
 ```
 ---
 # Ejecución Local
+
 La solución deberá poder ejecutarse localmente utilizando:
 ```bash
 docker compose up
@@ -110,6 +114,7 @@ docker compose up
 ---
 
 # Kubernetes
+
 Todo el despliegue deberá realizarse utilizando Helm.
 Se espera el uso de:
 - Deployment
@@ -120,6 +125,7 @@ Según aplique.
 ---
 
 # Troubleshooting
+
 Durante la prueba se incluye un escenario de incidente que deberá ser analizado.
 El análisis deberá documentarse en:
 ```text
@@ -128,6 +134,7 @@ RCA.md
 
 ---
 # Evaluación
+
 Se evaluarán:
 - Docker.
 - Kubernetes.
@@ -139,7 +146,15 @@ Se evaluarán:
 - Documentación.
 - Criterio técnico.
 ---
+# Herramientas y Libertad Tecnológica
+
+La evaluación busca validar conocimientos y criterio técnico, no el uso de una herramienta específica.
+El repositorio de la prueba será entregado mediante GitHub, sin embargo, el candidato podrá utilizar las herramientas que considere apropiadas para resolver el desafío.
+Se valorará especialmente la capacidad de justificar las decisiones tomadas y la aplicación de buenas prácticas de automatización, seguridad, observabilidad y operación.
+
+---
 # Consideraciones Finales
+
 No existe una única solución correcta.
 Se valorará especialmente la capacidad para justificar decisiones técnicas y operativas.
 En caso de asumir comportamientos o configuraciones no especificadas, documente claramente dichos supuestos.
