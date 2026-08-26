@@ -9,8 +9,8 @@ Para garantizar despliegues consistentes y reproducibles entre ambientes.
 ## HU-002 Automatización CI/CD
 ### Historia de Usuario
 Como equipo de desarrollo
-Quiero automatizar el proceso de construcción y validación
-Para reducir actividades manuales y mejorar la calidad de las entregas.
+Quiero automatizar el proceso de construcción, validación y despliegue de la solución
+Para reducir actividades manuales, mejorar la calidad de las entregas y garantizar la trazabilidad de los cambios.
 ---
 
 ## HU-003 Despliegue sobre Kubernetes
