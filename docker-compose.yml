@@ -1,0 +1,71 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    healthcheck:
+      test: ["CMD","rabbitmq-diagnostics","check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: resception_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+  orders-service:
+    build:
+      context: ./orders-service
+    container_name: orders-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_QUEUE: events_queue
+      REDIS_ADDR: redis:6379
+      REDIS_PASSWORD: ""
+      REDIS_LIST_KEY: events_list
+    ports:
+      - "8080:8080"
+  reception-service:
+    build:
+      context: ./reception-service/test
+    container_name: reception-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: resception_test
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+    ports:
+      - "8081:8080"
