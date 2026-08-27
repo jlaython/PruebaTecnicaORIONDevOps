@@ -1,58 +1,63 @@
-# Root Cause Analysis
+# RCA - Incident Analysis
 
 ## Resumen
 
-Se detectó degradación de la plataforma debido a fallas de conectividad con RabbitMQ y reinicios continuos del consumidor reception-service.
+Durante la operación de la plataforma se detectaron fallas en la comunicación con RabbitMQ y reinicios recurrentes del consumidor.
 
 ## Diagnóstico Inicial
 
-### orders-service
+orders-service
 
 - readiness probe failed
 - connection refused rabbitmq:5672
 
-### reception-service
+orders-worker
 
 - restart count: 14
 - OOMKilled
 
-### RabbitMQ
+RabbitMQ
 
-- queue events_queue con backlog elevado
+- backlog superior a 12500 mensajes
 
 ## Hipótesis
 
-1. reception-service consume más memoria que el límite permitido.
+1. El consumidor supera el límite de memoria.
+2. Kubernetes finaliza el proceso mediante OOMKilled.
+3. Los mensajes dejan de procesarse.
+4. La cola crece continuamente.
+5. orders-service presenta degradación operacional.
 
-2. Kubernetes finaliza el proceso por OOMKilled.
+## Causa Raíz Probable
 
-3. Los mensajes dejan de consumirse.
-
-4. El backlog crece en RabbitMQ.
-
-5. orders-service empieza a fallar por degradación de la mensajería.
-
-## Posible Causa Raíz
-
-Configuración insuficiente de memoria para reception-service.
-
-Limit configurado:
+El límite de memoria del consumidor fue configurado en:
 
 128Mi
 
-Uso observado:
+El consumo observado fue:
 
 127Mi
 
-## Mitigación
+Esto generó reinicios continuos y pérdida de capacidad de procesamiento.
 
-- Incrementar memoria disponible.
-- Escalar consumidores.
-- Monitorear consumo de recursos.
+## Mitigación Inmediata
+
+- Incrementar límite de memoria.
+- Reescalar consumidores.
+- Drenar la cola RabbitMQ.
 
 ## Prevención
 
-- HPA basado en CPU/Memoria.
-- Alertas Prometheus.
-- Dashboards Grafana.
-- Capacity planning.
+- Horizontal Pod Autoscaler.
+- Métricas Prometheus.
+- Alertas Grafana.
+- Capacity Planning.
+- Pruebas de carga periódicas.
+
+## Hallazgos durante implementación
+
+Durante las pruebas locales se identificó una condición de carrera entre RabbitMQ y orders-service.
+
+El servicio publisher intentaba conectarse antes de que RabbitMQ completara su arranque.
+
+La mitigación aplicada consistió en la incorporación de health checks y dependencias basadas en estado saludable.
