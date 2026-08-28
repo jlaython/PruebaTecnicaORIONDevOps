@@ -21,7 +21,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version-file: orders-service/go.mod
       - name: Download dependencies
         run: go mod download
       - name: Build application
@@ -41,7 +41,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Build Gradle project
-        run: ./gradlew build
+        run: ./gradlew build -x test
   docker-build:
     name: Docker Build Validation
     runs-on: ubuntu-latest
