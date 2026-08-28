@@ -86,6 +86,19 @@ Completado
 Estimación: M
 Prioridad: Alta
 
+## Evidencias:
+
+- GitHub Actions CI
+- Build Go
+- Build Spring
+- Helm Validation
+- Docker Build Validation
+- Trivy Scan
+
+## Estado
+
+Completado
+
 # HU-003 Kubernetes
 
 ## Actividades
@@ -99,6 +112,10 @@ Prioridad: Alta
 Estimación: L
 Prioridad: Alta
 
+## Estado
+
+Completado
+
 # HU-004 Configuración Segura
 
 ## Actividades
@@ -109,6 +126,10 @@ Prioridad: Alta
 
 Estimación: M
 Prioridad: Alta
+
+## Estado
+
+Completado
 
 # HU-005 Resiliencia Operativa
 
@@ -122,6 +143,10 @@ Prioridad: Alta
 Estimación: M
 Prioridad: Alta
 
+## Estado
+
+Completado
+
 # HU-006 RCA
 
 ## Actividades
@@ -134,6 +159,10 @@ Prioridad: Alta
 Estimación: S
 Prioridad: Alta
 
+## Estado
+
+Completado
+
 # HU-007 Seguridad (Opcional)
 
 ## Actividades
@@ -145,6 +174,10 @@ Prioridad: Alta
 Estimación: M
 Prioridad: Media
 
+## Estado
+
+Completado
+
 # HU-008 Observabilidad (Opcional)
 
 ## Actividades
@@ -155,3 +188,7 @@ Prioridad: Media
 
 Estimación: M
 Prioridad: Media
+
+## Estado
+
+Completado

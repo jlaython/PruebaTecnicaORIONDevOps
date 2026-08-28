@@ -26,6 +26,7 @@ jobs:
         run: go mod download
       - name: Build application
         run: go build .
+
   build-reception-service:
     name: Build Reception Service
     runs-on: ubuntu-latest
@@ -42,6 +43,7 @@ jobs:
           java-version: 17
       - name: Build Gradle project
         run: ./gradlew build -x test
+
   docker-build:
     name: Docker Build Validation
     runs-on: ubuntu-latest
@@ -55,6 +57,7 @@ jobs:
         run: docker build -t orders-service:test ./orders-service
       - name: Build Reception Image
         run: docker build -t reception-service:test ./reception-service/test
+
   helm-validation:
     name: Helm Validation
     runs-on: ubuntu-latest
@@ -67,6 +70,7 @@ jobs:
         run: helm lint ./helm/orion-platform
       - name: Helm Template
         run: helm template orion ./helm/orion-platform
+    
   security-scan:
     name: Trivy Scan
     runs-on: ubuntu-latest
@@ -83,3 +87,30 @@ jobs:
           image-ref: orders-service:test
           format: table
           exit-code: 0
+
+  release-validation:
+    name: Release Validation
+    runs-on: ubuntu-latest
+    needs:
+      - docker-build
+      - helm-validation
+      - security-scan
+    steps:
+      # Renderiza el chart y genera release-manifest.yaml
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+      - name: Generate Release Manifest
+        run: |
+          helm template orion ./helm/orion-platform > release-manifest.yaml
+      # Valida que el artefacto exista
+      - name: Verify Release Manifest
+        run: |
+          test -s release-manifest.yaml
+      # Lo publica como artefacto del pipeline
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-release-manifest
+          path: release-manifest.yaml

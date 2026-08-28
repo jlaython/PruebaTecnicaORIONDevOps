@@ -1,160 +1,224 @@
 # ORION Platform Engineering Challenge
 
-## Introducción
+## Resumen
 
-Bienvenido a la prueba técnica para el cargo de DevOps & Platform Engineer.
-El objetivo de esta evaluación es validar tus capacidades para diseñar, automatizar, desplegar y operar plataformas tecnológicas modernas basadas en contenedores y Kubernetes.
-La prueba busca simular una situación real donde un equipo de desarrollo ha construido una solución funcional, pero aún no existe una estrategia de despliegue, automatización, seguridad y operación.
+Se implementó una solución completa de Platform Engineering para la plataforma ORION, incorporando:
+
+- Contenerización de servicios.
+- Automatización CI/CD.
+- Despliegue Kubernetes mediante Helm.
+- Gestión segura de configuración.
+- Health checks y resiliencia operativa.
+- Validación de seguridad mediante Trivy.
+- Documentación de RCA y refinamiento técnico.
+
 ---
 
-# Contexto de Negocio
+## Arquitectura
 
-La plataforma ORION soporta aplicaciones utilizadas en Sistemas Inteligentes de Transporte (ITS).
-Actualmente el equipo de desarrollo ha construido una solución basada en microservicios que permite registrar órdenes y procesarlas mediante mensajería asíncrona.
-La solución está compuesta por:
-- Orders API
-- reception-service
-- Message Broker (RabbitMQ)
-La aplicación actualmente funciona en entorno local de desarrollo.
-Sin embargo, la organización necesita preparar la solución para ambientes empresariales utilizando prácticas modernas de DevOps y Platform Engineering.
-ver README de cada servicio para mayor entendimiento del mismo. 
----
-# Arquitectura Actual
-
-```text
 Cliente
-   │
-   ▼
-Orders API
-   │
-   ▼
-RabbitMQ
-   │
-   ▼
-Orders Worker
-```
+|
+v
+orders-service (Go)
+|
++--> Redis
+|
++--> RabbitMQ
+|
+v
+reception-service (Spring Boot)
+|
+v
+PostgreSQL
 
 ---
-# Objetivo
-Preparar la plataforma para su despliegue y operación empresarial mediante:
-- Contenerización.
-- CI/CD.
-- Kubernetes.
-- Helm.
-- Configuración segura.
-- Observabilidad.
-- Buenas prácticas operativas.
----
 
-# Código Entregado
+## Componentes
 
-El repositorio contiene:
-```text
-orders-service/
-orders-worker/
-```
-Ambos servicios son funcionales y pueden ejecutarse localmente.
-- La responsabilidad del candidato NO es desarrollar nuevas funcionalidades de negocio.
-- La responsabilidad principal es preparar la plataforma para ambientes productivos.
----
+### orders-service
 
-# Alcance
+- Go
+- Redis
+- RabbitMQ
+- Health endpoint: `/health`
 
-El backlog inicial se encuentra documentado en:
-```text
-BACKLOG.md
-```
-Antes de iniciar la implementación deberá realizar el ejercicio descrito en:
-```text
-REFINEMENT.md
-```
----
-# Tecnologías
+### reception-service
 
-Como mínimo se espera el uso de:
+- Java 17
+- Spring Boot
+- RabbitMQ Consumer
+- PostgreSQL
+- Actuator
+
+### Infraestructura
+
+- RabbitMQ
+- Redis
+- PostgreSQL
 - Docker
 - Kubernetes
-Se recomienda el uso de:
 - Helm
+
+---
+
+## Decisiones Técnicas
+
+### Docker
+
+Se utilizaron imágenes multi-stage para:
+
+- Reducir tamaño final.
+- Reducir superficie de ataque.
+- Mantener entornos reproducibles.
+
+### Seguridad
+
+Se implementó:
+
+- Usuario no root.
+- Kubernetes Secret.
+- SecurityContext.
+- Trivy Scan.
+
+### Kubernetes
+
+Se utilizaron:
+
+- Deployment.
+- Service.
+- ConfigMap.
+- Secret.
+- Liveness Probes.
+- Readiness Probes.
+
+### Helm
+
+Se eligió Helm para:
+
+- Parametrización de ambientes.
+- Versionamiento de despliegues.
+- Reutilización de manifiestos.
+- Simplificación operativa.
+
+---
+
+## Ejecución Local
+
+### Requisitos
+
+- Docker Desktop
+- Docker Compose
+
+### Levantar plataforma
+
+docker compose up -d
+
+### Validar servicios
+
+http://localhost:8080/health
+
+http://localhost:8081/actuator/health
+
+### RabbitMQ
+
+http://localhost:15672
+
+Usuario: guest
+Contraseña: guest
+
+---
+
+## Validación Funcional
+
+### Crear evento
+
+POST
+
+http://localhost:8080/api/v1/events
+
+Payload:
+
+{
+  "id": "1",
+  "message": "Prueba Orion"
+}
+
+### Consultar eventos
+
+GET
+
+http://localhost:8080/api/v1/events
+
+### Consultar mensajes procesados
+
+GET
+
+http://localhost:8081/api/v1/messages
+
+---
+
+## Helm
+
+### Validación
+
+helm lint ./helm/orion-platform
+
+helm template orion ./helm/orion-platform
+
+### Instalación
+
+helm install orion ./helm/orion-platform
+
+---
+
+## CI/CD
+
+GitHub Actions automatiza:
+
+- Build Go.
+- Build Spring Boot.
+- Docker Build.
+- Helm Validation.
+- Trivy Scan.
+
+Debido a que la prueba no suministra un clúster Kubernetes de destino ni un registro corporativo para imágenes, la fase CD fue implementada mediante generación y validación automática de artefactos Helm.
+El pipeline genera el manifiesto Kubernetes renderizado y lo publica como artefacto versionado listo para despliegue mediante:
+helm upgrade --install
+
+---
+
+## Entregables
+
+- Dockerfiles
+- docker-compose.yml
+- Helm Chart
 - GitHub Actions
-- GitLab CI/CD
-- Terraform
-- Trivy
-- SonarQube
-
-Los candidatos podrán utilizar herramientas adicionales o alternativas siempre que justifiquen técnicamente su elección y la solución sea reproducible.
----
-
-# Entregables
-
-La solución debe incluir:
-
-```text
-Dockerfile(s)
-
-docker-compose.yml
-
-Pipeline CI/CD
-
-Chart Helm (recomendado)
-
-README.md actualizado
-
-BACKLOG_REFINED.md
-
-RCA.md
-```
----
-# Ejecución Local
-
-La solución deberá poder ejecutarse localmente utilizando:
-```bash
-docker compose up
-```
----
-
-# Kubernetes
-
-Todo el despliegue deberá realizarse utilizando Helm.
-Se espera el uso de:
-- Deployment
-- Service
-- ConfigMap
-- Secret
-Según aplique.
----
-
-# Troubleshooting
-
-Durante la prueba se incluye un escenario de incidente que deberá ser analizado.
-El análisis deberá documentarse en:
-```text
-RCA.md
-```
+- BACKLOG_REFINED.md
+- RCA.md
 
 ---
-# Evaluación
 
-Se evaluarán:
-- Docker.
-- Kubernetes.
-- Helm.
-- GitLab CI/CD.
-- Seguridad.
-- Troubleshooting.
-- Observabilidad.
-- Documentación.
-- Criterio técnico.
----
-# Herramientas y Libertad Tecnológica
+## Hallazgos
 
-La evaluación busca validar conocimientos y criterio técnico, no el uso de una herramienta específica.
-El repositorio de la prueba será entregado mediante GitHub, sin embargo, el candidato podrá utilizar las herramientas que considere apropiadas para resolver el desafío.
-Se valorará especialmente la capacidad de justificar las decisiones tomadas y la aplicación de buenas prácticas de automatización, seguridad, observabilidad y operación.
+### Inconsistencia documental
+
+La documentación inicial menciona un componente denominado: orders-worker
+Sin embargo, el repositorio contiene: reception-service
+Se asumió que ambos componentes representan la misma responsabilidad funcional.
+
+### Estructura del repositorio Java
+
+El proyecto Spring Boot se encuentra dentro del directorio:
+reception-service/test
+Se documentó este comportamiento como supuesto técnico.
 
 ---
-# Consideraciones Finales
 
-No existe una única solución correcta.
-Se valorará especialmente la capacidad para justificar decisiones técnicas y operativas.
-En caso de asumir comportamientos o configuraciones no especificadas, documente claramente dichos supuestos.
+## Autor
+
+Jhon David Laython Chavarro
+
+Prueba Técnica ORION
+DevOps & Platform Engineer
+
+Fecha de entrega: 27 de Agosto 2026
