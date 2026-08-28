@@ -1,0 +1,53 @@
+orders:
+  replicaCount: 1
+  image:
+    repository: orion/orders-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+reception:
+  replicaCount: 1
+  image:
+    repository: orion/reception-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+rabbitmq:
+  host: rabbitmq
+  port: "5672"
+  username: guest
+  password: guest
+  queue: events_queue
+
+redis:
+  host: redis
+  port: "6379"
+  password: ""
+  listKey: events_list
+
+postgres:
+  host: postgres
+  port: "5432"
+  database: resception_test
+  username: postgres
+  password: postgres

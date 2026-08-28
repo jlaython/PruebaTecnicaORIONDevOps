@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orion-platform-config
+data:
+  SERVER_PORT: "8080"
+  RABBITMQ_QUEUE: "events_queue"
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+  REDIS_ADDR: "redis:6379"
+  REDIS_LIST_KEY: "events_list"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "resception_test"
+  DB_USER: "postgres"
+  RABBITMQ_USERNAME: "guest"
