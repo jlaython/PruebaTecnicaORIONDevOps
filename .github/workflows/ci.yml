@@ -1,0 +1,87 @@
+name: ORION CI Pipeline
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-orders-service:
+    name: Build Orders Service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: orders-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Download dependencies
+        run: go mod download
+      - name: Build application
+        run: go build .
+  build-reception-service:
+    name: Build Reception Service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: reception-service/test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Build Gradle project
+        run: ./gradlew build
+  docker-build:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+    needs:
+      - build-orders-service
+      - build-reception-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build Orders Image
+        run: docker build -t orders-service:test ./orders-service
+      - name: Build Reception Image
+        run: docker build -t reception-service:test ./reception-service/test
+  helm-validation:
+    name: Helm Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+      - name: Helm Lint
+        run: helm lint ./helm/orion-platform
+      - name: Helm Template
+        run: helm template orion ./helm/orion-platform
+  security-scan:
+    name: Trivy Scan
+    runs-on: ubuntu-latest
+    needs:
+      - docker-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build Orders Image
+        run: docker build -t orders-service:test ./orders-service
+      - name: Build Reception Image
+        run: docker build -t reception-service:test ./reception-service/test
+      - name: Run Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: orders-service:test
+          format: table
+          exit-code: 0
